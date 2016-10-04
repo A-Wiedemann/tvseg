@@ -3,6 +3,7 @@
 
 
 #include <cassert>
+#include <cstddef>
 
 
 namespace tvseg {

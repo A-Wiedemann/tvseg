@@ -7,12 +7,12 @@
 #include "tvseg/util/arrayio.h"
 
 #define TVSEG_INPUT_SETTINGS_SEQ                            \
-    (std::string, color, "Images/test46_color.png")         \
+    (std::string, color, "results/20141215/20141215_134219_26_color.png")         \
     (bool, loadDepth, true)                                 \
     (bool, loadGroundTruth, true)                           \
     (bool, loadScribbles, true)                             \
     (bool, loadSettings, true)                              \
-    (std::string, colorMatch, "_color(..*)")              \
+    (std::string, colorMatch, "_color")              \
     (std::string, depthReplace, "_depth\\1")                \
     (std::string, groundTruthReplace, "_label\\1")          \
     (std::string, groundTruthLabelMappingReplace, "_label_mapping.txt") \

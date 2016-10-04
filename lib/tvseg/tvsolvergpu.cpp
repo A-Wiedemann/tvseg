@@ -69,6 +69,11 @@ void TVSolverGPU::computeSolution(const cv::Mat dataterm, const cv::Mat weight, 
         return;
     }
 
+    std::string pathMat_u = "Mat_u_.xml";            // set some path
+    cv::FileStorage saveMat_u(pathMat_u, cv::FileStorage::WRITE);        // and save the matrix
+    saveMat_u << "Mat_u" << u;
+    saveMat_u.release();
+
     solution_ = segmentation;
 }
 

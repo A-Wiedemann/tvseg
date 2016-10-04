@@ -13,7 +13,7 @@ macx {
     CONFIG -= app_bundle
 
     # fixme: this is not a very general solution
-    BOOST_ROOT=/usr/local/opt/boost-libstdcxx
+    BOOST_ROOT=/usr/wiss/hazirbas/Libs/Boost/1.54/build/
 
     # Boost (on Mac this is not automatic)
     include (qinclude/boost.pri)
@@ -22,8 +22,8 @@ macx {
     QMAKE_CXXFLAGS += -stdlib=libstdc++
     QMAKE_LFLAGS += -stdlib=libstdc++
 
-    QMAKE_CXXFLAGS += $$system(PKG_CONFIG_PATH=/usr/local/opt/opencv-libstdcxx/lib/pkgconfig/ pkg-config opencv --cflags)
-    LIBS += $$system(PKG_CONFIG_PATH=/usr/local/opt/opencv-libstdcxx/lib/pkgconfig/ pkg-config opencv --libs-only-other)
+    QMAKE_CXXFLAGS += $$system(pkg-config opencv --cflags)
+    LIBS += $$system(pkg-config opencv --libs-only-other)
 
 } else {
     CONFIG += link_pkgconfig
@@ -233,7 +233,8 @@ CUDA_ARCH = sm_30
 unix {
 
     # detect CUDA path from nvcc binary
-    CUDA_DIR = $$system(which nvcc | sed 's,/bin/nvcc$,,')
+    # CUDA_DIR = $$system(which nvcc | sed 's,/bin/nvcc$,,')
+    CUDA_DIR = /usr/local/cuda-8.0
 
     INCLUDEPATH += $$CUDA_DIR/include
     DEPENDPATH += $$CUDA_DIR/include
@@ -245,18 +246,18 @@ unix {
         QMAKE_LIBDIR += $$CUDA_DIR/lib64
     }
     else {
-        QMAKE_LIBDIR += $$CUDA_DIR/lib
+        QMAKE_LIBDIR += $$CUDA_DIR/lib64 ## Caner : set to lib64
     }
 
     LIBS += -lcudart -lnppi
 
-    macx:LIBS += -Wl,-rpath,$$CUDA_DIR/lib
+    macx:LIBS += -Wl,-rpath,$$CUDA_DIR/lib64
 
     cuda.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}_cuda.obj
-    cuda.commands = nvcc -c -arch $$CUDA_ARCH -Xcompiler $$join(CUDA_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
+    cuda.commands = $$CUDA_DIR/bin/nvcc -c -arch $$CUDA_ARCH -Xcompiler $$join(CUDA_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
 
     cuda.dependcy_type = TYPE_C
-    cuda.depend_command = nvcc -M -arch $$CUDA_ARCH -Xcompiler $$join(CUDA_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME}
+    cuda.depend_command = $$CUDA_DIR/bin/nvcc -M -arch $$CUDA_ARCH -Xcompiler $$join(CUDA_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME}
 } else {
     error("CUDA support not implemented in project file.")
 }

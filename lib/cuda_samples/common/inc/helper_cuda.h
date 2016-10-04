@@ -288,23 +288,23 @@ static const char *_cudaGetErrorEnum(cudaError_t error)
         case cudaErrorNotSupported:
             return "cudaErrorNotSupported";
 
-        case cudaErrorHardwareStackError:
-            return "cudaErrorHardwareStackError";
+//        case cudaErrorHardwareStackError:
+//            return "cudaErrorHardwareStackError";
 
-        case cudaErrorIllegalInstruction:
-            return "cudaErrorIllegalInstruction";
+//        case cudaErrorIllegalInstruction:
+//            return "cudaErrorIllegalInstruction";
 
-        case cudaErrorMisalignedAddress:
-            return "cudaErrorMisalignedAddress";
+//        case cudaErrorMisalignedAddress:
+//            return "cudaErrorMisalignedAddress";
 
-        case cudaErrorInvalidAddressSpace:
-            return "cudaErrorInvalidAddressSpace";
+//        case cudaErrorInvalidAddressSpace:
+//            return "cudaErrorInvalidAddressSpace";
 
-        case cudaErrorInvalidPc:
-            return "cudaErrorInvalidPc";
+//        case cudaErrorInvalidPc:
+//            return "cudaErrorInvalidPc";
 
-        case cudaErrorIllegalAddress:
-            return "cudaErrorIllegalAddress";
+//        case cudaErrorIllegalAddress:
+//            return "cudaErrorIllegalAddress";
     }
 
     return "<unknown>";
@@ -458,26 +458,26 @@ static const char *_cudaGetErrorEnum(CUresult error)
         case CUDA_ERROR_PEER_ACCESS_UNSUPPORTED:
             return "CUDA_ERROR_PEER_ACCESS_UNSUPPORTED";
 
-        case CUDA_ERROR_INVALID_PTX:
-            return "CUDA_ERROR_INVALID_PTX";
+//        case CUDA_ERROR_INVALID_PTX:
+//            return "CUDA_ERROR_INVALID_PTX";
 
-        case CUDA_ERROR_ILLEGAL_ADDRESS:
-            return "CUDA_ERROR_ILLEGAL_ADDRESS";
+//        case CUDA_ERROR_ILLEGAL_ADDRESS:
+//            return "CUDA_ERROR_ILLEGAL_ADDRESS";
 
-        case CUDA_ERROR_HARDWARE_STACK_ERROR:
-            return "CUDA_ERROR_HARDWARE_STACK_ERROR";
+//        case CUDA_ERROR_HARDWARE_STACK_ERROR:
+//            return "CUDA_ERROR_HARDWARE_STACK_ERROR";
 
-        case CUDA_ERROR_ILLEGAL_INSTRUCTION:
-            return "CUDA_ERROR_ILLEGAL_INSTRUCTION";
+//        case CUDA_ERROR_ILLEGAL_INSTRUCTION:
+//            return "CUDA_ERROR_ILLEGAL_INSTRUCTION";
 
-        case CUDA_ERROR_MISALIGNED_ADDRESS:
-            return "CUDA_ERROR_MISALIGNED_ADDRESS";
+//        case CUDA_ERROR_MISALIGNED_ADDRESS:
+//            return "CUDA_ERROR_MISALIGNED_ADDRESS";
 
-        case CUDA_ERROR_INVALID_ADDRESS_SPACE:
-            return "CUDA_ERROR_INVALID_ADDRESS_SPACE";
+//        case CUDA_ERROR_INVALID_ADDRESS_SPACE:
+//            return "CUDA_ERROR_INVALID_ADDRESS_SPACE";
 
-        case CUDA_ERROR_INVALID_PC:
-            return "CUDA_ERROR_INVALID_PC";
+//        case CUDA_ERROR_INVALID_PC:
+//            return "CUDA_ERROR_INVALID_PC";
 
         case CUDA_ERROR_NOT_PERMITTED:
             return "CUDA_ERROR_NOT_PERMITTED";
