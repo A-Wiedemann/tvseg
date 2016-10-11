@@ -179,24 +179,6 @@
     BOOST_PP_TUPLE_ELEM(ATTRIBUTE_TUPEL_SIZE,0,ATTRIBUTE)                       \
         BOOST_PP_TUPLE_ELEM(ATTRIBUTE_TUPEL_SIZE,1,ATTRIBUTE);
 
-
-// FIXME: call_traits
-//#define TVSEG_SETTINGS_DEFINE_PARAMS_DEFAULT_ATTR_I(                            \
-//    R, ATTRIBUTE_TUPEL_SIZE, ATTRIBUTE)                                         \
-//                                                                                \
-//    boost::call_traits<                                                         \
-//        BOOST_PP_TUPLE_ELEM(ATTRIBUTE_TUPEL_SIZE,0,ATTRIBUTE)                   \
-//        >::const_reference                                                      \
-//        BOOST_PP_CAT(BOOST_PP_TUPLE_ELEM(                                       \
-//            ATTRIBUTE_TUPEL_SIZE,1,ATTRIBUTE),Default())                        \
-//    {                                                                           \
-//        static const BOOST_PP_TUPLE_ELEM(ATTRIBUTE_TUPEL_SIZE,0,ATTRIBUTE)      \
-//            value(BOOST_PP_TUPLE_ELEM(ATTRIBUTE_TUPEL_SIZE,2,ATTRIBUTE));       \
-//        return value;                                                           \
-//    }
-
-
-
 // FIXME: call_traits
 #define TVSEG_SETTINGS_DEFINE_PARAMS_DEFAULT_ATTR_I(                            \
     R, ATTRIBUTE_TUPEL_SIZE, ATTRIBUTE)                                         \
@@ -230,26 +212,6 @@
             NAME, ATTRIBUTES_SEQ, ATTRIBUTE_TUPEL_SIZE)
 
 
-
-// FIXME: call_traits
-//#define TVSEG_SETTINGS_DEFINE_PARAMS_CTOR_1(                                    \
-//        NAME, ATTRIBUTES_SEQ, ATTRIBUTE_TUPEL_SIZE)                             \
-//                                                                                \
-//        explicit                                                                \
-//        NAME(boost::call_traits<                                                \
-//                BOOST_PP_TUPLE_ELEM(                                            \
-//                    ATTRIBUTE_TUPEL_SIZE,0,BOOST_PP_SEQ_HEAD(ATTRIBUTES_SEQ))   \
-//            >::param_type BOOST_PP_CAT(_,                                       \
-//                BOOST_PP_TUPLE_ELEM(                                            \
-//                    ATTRIBUTE_TUPEL_SIZE,1,BOOST_PP_SEQ_HEAD(ATTRIBUTES_SEQ)))) \
-//          : BOOST_PP_TUPLE_ELEM(                                                \
-//                ATTRIBUTE_TUPEL_SIZE,1,BOOST_PP_SEQ_HEAD(ATTRIBUTES_SEQ))       \
-//            (BOOST_PP_CAT(_,BOOST_PP_TUPLE_ELEM(                                \
-//                ATTRIBUTE_TUPEL_SIZE,1,BOOST_PP_SEQ_HEAD(ATTRIBUTES_SEQ))))     \
-//        {}
-
-
-
 // FIXME: call_traits
 #define TVSEG_SETTINGS_DEFINE_PARAMS_CTOR_1(                                    \
     NAME, ATTRIBUTES_SEQ, ATTRIBUTE_TUPEL_SIZE)                                 \
@@ -281,19 +243,6 @@
             ATTRIBUTE_TUPEL_SIZE,                                               \
             ATTRIBUTES_SEQ)                                                     \
     {}
-
-
-
-// FIXME: call_traits
-//#define TVSEG_SETTINGS_DEFINE_PARAMS_CTOR_ARG_I(                                \
-//        R, ATTRIBUTE_TUPEL_SIZE, I, ATTRIBUTE)                                  \
-//                                                                                \
-//        BOOST_PP_COMMA_IF(I)                                                    \
-//        boost::call_traits<                                                     \
-//            BOOST_PP_TUPLE_ELEM(ATTRIBUTE_TUPEL_SIZE,0,ATTRIBUTE)               \
-//        >::param_type BOOST_PP_CAT(                                             \
-//            _, BOOST_PP_TUPLE_ELEM(ATTRIBUTE_TUPEL_SIZE,1,ATTRIBUTE))
-
 
 
 // FIXME: call_traits
