@@ -13,6 +13,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
+#include "boost/tuple/tuple_comparison.hpp"
+#include "boost/tuple/tuple_io.hpp"
 
 namespace {
 
@@ -49,7 +51,8 @@ SegmentationImpl::SegmentationImpl(settings::BackendPtr settingsBackend):
     weightInterface_(new CVAlgorithmInterfaceBase()),
     datatermInterface_(new CVAlgorithmInterfaceBase()),
     solverInterface_(new CVAlgorithmInterfaceBase()),
-    visualizerInterface_(new CVAlgorithmInterfaceBase())
+    visualizerInterface_(new CVAlgorithmInterfaceBase()),
+    numLabels(2)
 {
     tvweight_.reset(new TVWeightEdge(settingsBackend_));
 
@@ -148,14 +151,6 @@ void SegmentationImpl::saveResult()
         LERROR << "Failed to save result with filesystem error: " << ex.what();
     }
 }
-
-//void SegmentationImpl::setSettingsBackend(settings::BackendPtr settingsBackend)
-//{
-//    settingsBackend_ = settingsBackend;
-//    // TODO: call replace
-//    //settings_->replaceBackend(settingsBackend_);
-//    settings_.reset(new SettingsTest(settingsBackend_));
-//}
 
 void SegmentationImpl::loadInput()
 {
@@ -265,7 +260,8 @@ void SegmentationImpl::loadInputImageGroundTruth()
 
 cv::Mat SegmentationImpl::inputImageGroundTruth() const
 {
-    return tvseg::mapLabels(inputImageGroundTruth_, inputGroundTruthLabelMapping(), settings()->numLabels());
+    std::cout << "numLabels in inputImageGroundTruth: " << numLabels << std::endl;
+    return tvseg::mapLabels(inputImageGroundTruth_, inputGroundTruthLabelMapping(), numLabels);
 }
 
 bool SegmentationImpl::inputImageGroundTruthAvailable() const
@@ -302,7 +298,8 @@ const std::vector<uint>& SegmentationImpl::inputGroundTruthLabelMapping() const
 
 cv::Mat SegmentationImpl::labels() const
 {
-    const uint n = settings()->numLabels();
+    std::cout << "numLabels in labels(): " << numLabels << std::endl;
+    const uint n = numLabels;
 
     if (n > MAX_LABELS) {
         LERROR << "Trying to access more labels than available.";
@@ -318,7 +315,8 @@ cv::Mat SegmentationImpl::labels() const
 
 bool SegmentationImpl::labelsAvailable() const
 {
-    return settings()->numLabels() <= MAX_LABELS;
+    std::cout << "numLabels in labelsAvailable(): " << numLabels << std::endl;
+    return numLabels <= MAX_LABELS;
 }
 
 
@@ -353,8 +351,58 @@ void SegmentationImpl::loadScribbles()
     if (!fs::exists(filename)) {
         LINFO << "Skipping to load non-existent scribble image '" << filename << "'.";
     } else {
+        setLabels(filename);
         scribbles_.loadScribbleImage(filename, labels(), dim);
     }
+}
+
+void SegmentationImpl::setLabels(std::string filename)
+{
+    typedef boost::tuple<uchar, uchar, uchar> triple_t;
+
+    cv::Mat labelColors;
+    cv::Mat scribbleImage = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+
+    //std::cout << "labelColors. hello: " << labelColors.rows << std::endl;
+
+    for (int x = 0; x < scribbleImage.cols; ++x) {
+        for (int y = 0; y < scribbleImage.rows; ++y) {
+              cv::Vec3b vec_scr = scribbleImage.at<cv::Vec3b>(y, x);
+              triple_t val_scr(vec_scr[0], vec_scr[1], vec_scr[2]);
+              //std::cout << labelColors << std::endl;
+              if (labelColors.rows == 0) {
+                  //std::cout << "labelColors.rows: " << labelColors.rows << std::endl;
+                  //std::cout << "At (" << y << ", " << x << ") pixel value: " << vec_scr << std::endl;
+                  labelColors.push_back(vec_scr);
+              } else {
+                  bool newColor = false;
+                  for (int i=0;i<labelColors.rows;++i) {
+                      cv::Vec3b vec_lab = labelColors.at<cv::Vec3b>(i,0 );
+                      triple_t val_lab(vec_lab[0], vec_lab[1], vec_lab[2]);
+                      if (val_scr == val_lab)
+                          break;
+                      if (i == labelColors.rows-1 && val_scr != triple_t(0,0,128)) {
+                          newColor = true;
+//                          std::cout << "labelColors.rows: " << labelColors.rows << std::endl;
+//                          std::cout << "Comparing: " << vec_scr << " and " << vec_lab << std::endl;
+                      }
+                  }
+                  if (newColor)
+                      labelColors.push_back(vec_scr);
+              }
+        }
+    }
+    numLabels = labelColors.rows;
+    allLabels_= cv::Mat(1, labelColors.rows, CV_32FC3);
+
+
+    for (int i=0;i<labelColors.rows;++i) {
+        allLabels_.at<cv::Vec3f>(0, i) = cv::Vec3f(labelColors.at<cv::Vec3b>(i, 0)); //
+    }
+
+    std::cout << "labelColors: " << labelColors << std::endl;
+    std::cout << "allLabels: " << allLabels_ << std::endl;
+    return;
 }
 
 void SegmentationImpl::saveScribbles() const
@@ -375,7 +423,8 @@ const Scribbles& SegmentationImpl::scribbles() const
 
 void SegmentationImpl::computeKMeans()
 {
-    const int n = settings()->numLabels();
+    std::cout << "numLabels in computeKMeans: " << numLabels << std::endl;
+    const int n = numLabels;
 
     if (!inputImageColorAvailable()) {
         LDEBUGF("No image available; Cannot compute %d means", n);
@@ -392,12 +441,14 @@ void SegmentationImpl::computeKMeans()
 
 cv::Mat SegmentationImpl::kMeans() const
 {
-    return kmeans()->means(settings()->numLabels());
+    std::cout << "numLabels in kMeans(): " << numLabels << std::endl;
+    return kmeans()->means(numLabels);
 }
 
 bool SegmentationImpl::kMeansAvailable() const
 {
-    return kmeans_->maxNumMeans() >= (int) settings()->numLabels();
+    std::cout << "numLabels in kMeansAvailable(): " << numLabels << std::endl;
+    return kmeans_->maxNumMeans() >= (int) numLabels;
 }
 
 void SegmentationImpl::computeWeight()
@@ -431,12 +482,12 @@ void SegmentationImpl::computeDataterm()
         LDEBUGF("No image available. Cannot compute dataterm.");
         return;
     }
-
+    std::cout << "numLabels in computeDataterm(): " << numLabels << std::endl;
     tvdataterm()->computeDataterm(inputImageColor(),
                                   inputImageDepth(),
                                   inputSettings()->intrinsics(),
                                   scribbles(),
-                                  settings()->numLabels(),
+                                  numLabels,
                                   feedback_.get());
     if (tvdataterm()->datatermAvailable()) {
         LINFOF("Computed dataterm");
@@ -476,8 +527,8 @@ void SegmentationImpl::computeSolution()
         LDEBUGF("No weight available. Cannot compute solution.");
         return;
     }
-
-    tvsolver()->computeSolution(dataterm(), weight(), settings()->numLabels(), feedback_.get());
+    std::cout << "numLabels in computeSolution(): " << numLabels << std::endl;
+    tvsolver()->computeSolution(dataterm(), weight(), numLabels, feedback_.get());
     if (tvsolver()->solutionAvailable()) {
         LINFOF("Computed solution");
     } else {
@@ -515,7 +566,8 @@ std::vector<float> SegmentationImpl::computeMetrics() const
         LERROR << "No ground truth available to compute metrics";
         return std::vector<float>();
     }
-    return computeMetrics(solution(), inputImageGroundTruth(), settings()->numLabels());
+    std::cout << "numLabels in computeMetrics(): " << numLabels << std::endl;
+    return computeMetrics(solution(), inputImageGroundTruth(), numLabels);
 }
 
 void SegmentationImpl::computeVisualization()
@@ -534,8 +586,8 @@ void SegmentationImpl::computeVisualization()
         LDEBUGF("No labels available. Cannot compute visualization.");
         return;
     }
-
-    tvvisualizer()->computeVisualization(solution(), inputImageGroundTruth(), inputImageColor(), labels(), settings()->numLabels(), feedback_.get());
+    std::cout << "numLabels in computeVisualization(): " << numLabels << std::endl;
+    tvvisualizer()->computeVisualization(solution(), inputImageGroundTruth(), inputImageColor(), labels(), numLabels, feedback_.get());
     if (tvvisualizer()->visualizationAvailable()) {
         LINFOF("Computed visualization");
     } else {
@@ -773,6 +825,17 @@ void SegmentationImpl::initDefaultLabels()
 {
     allLabels_ = cv::Mat(1, MAX_LABELS, CV_32FC3);
 
+
+//    cv::FileStorage fs;
+//    fs.open("../pixelvalues.xml", cv::FileStorage::READ);
+//    cv::Mat pixelMatrix;
+//    fs["pixelMatrix"] >> pixelMatrix;
+
+
+//    pixelMatrix.convertTo(pixelMatrix, CV_32FC3);   // convert int to float
+//    pixelMatrix /= 255.;    // scalar to [0,1]
+
+//    std::cout << pixelMatrix << std::endl;
     // Some hardcoded values
     allLabels_.at<cv::Vec3f>(0, 0) = cv::Vec3f(0  , 0  , 1  ); // BGR
     allLabels_.at<cv::Vec3f>(0, 1) = cv::Vec3f(0  , 1  , 0  );
@@ -784,8 +847,9 @@ void SegmentationImpl::initDefaultLabels()
     allLabels_.at<cv::Vec3f>(0, 7) = cv::Vec3f(0.5, 1  , 0.5);
     allLabels_.at<cv::Vec3f>(0, 8) = cv::Vec3f(0.5, 0.5, 1  );
 
+
     // fill the rest with some grey values for now; if needed add more hardcoded values later
-    for (int i = 9; i < MAX_LABELS; ++i) {
+    for (int i = 254; i < MAX_LABELS; ++i) {
         allLabels_.at<cv::Vec3f>(0, i) = cv::Vec3f(i / 255., i / 255., i / 255.);
     }
 }

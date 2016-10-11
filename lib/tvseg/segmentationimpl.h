@@ -56,6 +56,7 @@ public: // Segmentation interface
 
     cv::Mat labels() const;
     bool    labelsAvailable() const;
+    void setLabels(std::string filename);
 
     void loadScribbles();
     void saveScribbles() const;
@@ -140,6 +141,8 @@ private:
     std::vector<uint> inputGroundTruthLabelMapping_;
 
     Scribbles scribbles_;
+
+    uint numLabels;
 
     KMeansPtr kmeans_;
     TVWeightPtr tvweight_;
