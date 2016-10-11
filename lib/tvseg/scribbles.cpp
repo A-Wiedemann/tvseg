@@ -106,15 +106,18 @@ void Scribbles::setFromImage(cv::Mat scribbleImage, cv::Mat labelColors, Dim2 di
         return;
     }
 
+    typedef boost::tuple<uchar, uchar, uchar> triple_t;
+    typedef std::map<triple_t, uint> reverse_map_t;
+
+    labelColors.convertTo(labelColors, CV_8UC3);
+//    std::cout << "labelColors: " << labelColors << std::endl;
+
     uint numLabels = labelColors.cols;
     list_.clear();
     list_.resize(numLabels);
 
-    // do lookup with integers not floating point
-    labelColors.convertTo(labelColors, CV_8UC3, 255);
+    std::cout << "In setFromImage numLabels: " << numLabels<< std::endl;
 
-    typedef boost::tuple<uchar, uchar, uchar> triple_t;
-    typedef std::map<triple_t, uint> reverse_map_t;
     reverse_map_t reverseLabels;
     for (int i = 0; i < labelColors.cols; ++i) {
         cv::Vec3b vec = labelColors.at<cv::Vec3b>(0, i);
@@ -126,11 +129,11 @@ void Scribbles::setFromImage(cv::Mat scribbleImage, cv::Mat labelColors, Dim2 di
         for (int y = 0; y < scribbleImage.rows; ++y) {
             cv::Vec3b vec = scribbleImage.at<cv::Vec3b>(y, x);
             triple_t val(vec[0], vec[1], vec[2]);
-            if (val != triple_t(255,255,255)) {
+            if (val != triple_t(0,0,128)) {
                 // ignore white pixels
-                reverse_map_t::iterator iter = reverseLabels.find(val);
+               reverse_map_t::iterator iter = reverseLabels.find(val);
                 if (iter == reverseLabels.end()) {
-                    LWARNING << "Scribble color " << val << " at pixel (" << x << "," << y << ") does not match current label color... ignoring";
+                    LWARNING << "Scribble color " << vec <<" at pixel (" << x << "," << y << ") does not match current label color... ignoring";
                     continue;
                 }
                 uint i = iter->second;
@@ -138,6 +141,8 @@ void Scribbles::setFromImage(cv::Mat scribbleImage, cv::Mat labelColors, Dim2 di
             }
         }
     }
+
+    std::cout << "In setFromImage list_: " << list_.size()<< std::endl;
 }
 
 void Scribbles::saveScribbleImage(std::string filename, cv::Mat labelColors, Dim2 dim) const
@@ -150,7 +155,13 @@ void Scribbles::saveScribbleImage(std::string filename, cv::Mat labelColors, Dim
 
 void Scribbles::loadScribbleImage(std::string filename, cv::Mat labelColors, Dim2 dim)
 {
-    cv::Mat image = cv::imread(filename);
+    cv::Mat image = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+//    cv::cvtColor(image,image,CV_RGB2BGR);
+//    cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
+//    cv::imshow( "Display window", image );                   // Show our image inside it.
+
+//    cv::waitKey(0);
+//    std::cout << image << std::endl;
     std::string type = matTypeToStr(image.type());
     LINFOF("Loaded scribble image '%s' (%s %dx%d)", filename.c_str(), type.c_str(), image.cols, image.rows);
     setFromImage(image, labelColors, dim);
