@@ -7,16 +7,16 @@
 #include "tvseg/util/arrayio.h"
 
 #define TVSEG_INPUT_SETTINGS_SEQ                            \
-    (std::string, color, "results/20141215/20141215_134219_26_color.png")         \
+    (std::string, color, "../TestImages/images/1_color.png")         \
     (bool, loadDepth, true)                                 \
     (bool, loadGroundTruth, true)                           \
     (bool, loadScribbles, true)                             \
     (bool, loadSettings, true)                              \
-    (std::string, colorMatch, "_color")              \
-    (std::string, depthReplace, "_depth\\1")                \
-    (std::string, groundTruthReplace, "_label\\1")          \
+    (std::string, colorMatch, "_color.png")              \
+    (std::string, depthReplace, "_depth_filled_colorization.png")                \
+    (std::string, groundTruthReplace, "_gt.png")          \
     (std::string, groundTruthLabelMappingReplace, "_label_mapping.txt") \
-    (std::string, scribblesReplace, "_scribbles\\1")        \
+    (std::string, scribblesReplace, "_scribbles.png")        \
     (std::string, settingsReplace, "_settings.ini")         \
     (float, depthScale, 10000)                              \
     (std::vector<float>, intrinsics, std::vector<float>(9)) \
