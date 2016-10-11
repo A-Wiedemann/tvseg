@@ -302,7 +302,8 @@ void TVSegWindow::on_saveSettingsButton_clicked()
 void TVSegWindow::on_loadImageButton_clicked()
 {
     seg()->loadInput();
-
+    ui_->inputDisplay->setLabels(seg()->labels());
+    displayLabels();
     updateGUIFromSettings();
     updateSettingsEditors();
 
