@@ -1,3 +1,5 @@
+#include <boost/bind.hpp>
+
 #include "tvseg/segmentationimpl.h"
 
 #include "tvseg/kmeanscpu.h"

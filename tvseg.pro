@@ -13,7 +13,7 @@ macx {
     CONFIG -= app_bundle
 
     # fixme: this is not a very general solution
-    BOOST_ROOT=/usr/wiss/hazirbas/Libs/Boost/1.54/build/
+    BOOST_ROOT=/usr/include/boost
 
     # Boost (on Mac this is not automatic)
     include (qinclude/boost.pri)
@@ -36,6 +36,7 @@ macx {
 ########################################################################
 # Main configuration
 ########################################################################
+BOOST_ROOT=/usr/include/boost
 
 QT      += core gui concurrent
 
@@ -234,7 +235,7 @@ unix {
 
     # detect CUDA path from nvcc binary
     # CUDA_DIR = $$system(which nvcc | sed 's,/bin/nvcc$,,')
-    CUDA_DIR = /usr/local/cuda-8.0
+    CUDA_DIR = /opt/cuda
 
     INCLUDEPATH += $$CUDA_DIR/include
     DEPENDPATH += $$CUDA_DIR/include

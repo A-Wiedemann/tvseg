@@ -17,7 +17,7 @@
 #include <QFileDialog>
 
 #include <QtConcurrent>
-
+#include <boost/bind.hpp>
 
 
 

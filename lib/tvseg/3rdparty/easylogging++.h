@@ -44,7 +44,7 @@
 //  * Change logger level output strings
 //
 ///////////////////////////////////////////////////////////////////////////////////
-
+#include <boost/function.hpp>
 #ifndef EASYLOGGINGPP_H
 #define EASYLOGGINGPP_H
 //
