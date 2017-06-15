@@ -56,7 +56,7 @@ public: // Segmentation interface
 
     cv::Mat labels() const;
     bool    labelsAvailable() const;
-    void setLabels(std::string filename);
+    void setAllLabels(std::string filename);
 
     void loadScribbles();
     void saveScribbles() const;
@@ -124,6 +124,8 @@ private:
     void configureVisualizerInterface();
 
     void initDefaultLabels();
+
+    bool isEqual(cv::Vec3b p1, cv::Vec3b p2);
 
     std::vector<float> computeMetrics(cv::Mat prediction, cv::Mat groundTruth, uint numLabels) const;
 

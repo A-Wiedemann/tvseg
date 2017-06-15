@@ -351,40 +351,41 @@ void SegmentationImpl::loadScribbles()
     if (!fs::exists(filename)) {
         LINFO << "Skipping to load non-existent scribble image '" << filename << "'.";
     } else {
-        setLabels(filename);
+        setAllLabels(filename);
         scribbles_.loadScribbleImage(filename, labels(), dim);
     }
 }
 
-void SegmentationImpl::setLabels(std::string filename)
+bool SegmentationImpl::isEqual(cv::Vec3b p1, cv::Vec3b p2)
+{
+    typedef boost::tuple<uchar, uchar, uchar> triple_t;
+    triple_t val_p1(p1[0], p1[1], p1[2]);
+    triple_t val_p2(p2[0], p2[1], p2[2]);
+
+    return val_p1 == val_p2;
+}
+
+void SegmentationImpl::setAllLabels(std::string filename)
 {
     typedef boost::tuple<uchar, uchar, uchar> triple_t;
 
     cv::Mat labelColors;
     cv::Mat scribbleImage = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
 
-    //std::cout << "labelColors. hello: " << labelColors.rows << std::endl;
+    cv::Vec3b backgroundColor(0,0,128);
 
     for (int x = 0; x < scribbleImage.cols; ++x) {
         for (int y = 0; y < scribbleImage.rows; ++y) {
               cv::Vec3b vec_scr = scribbleImage.at<cv::Vec3b>(y, x);
-              triple_t val_scr(vec_scr[0], vec_scr[1], vec_scr[2]);
-              //std::cout << labelColors << std::endl;
               if (labelColors.rows == 0) {
-                  //std::cout << "labelColors.rows: " << labelColors.rows << std::endl;
-                  //std::cout << "At (" << y << ", " << x << ") pixel value: " << vec_scr << std::endl;
                   labelColors.push_back(vec_scr);
               } else {
                   bool newColor = false;
                   for (int i=0;i<labelColors.rows;++i) {
-                      cv::Vec3b vec_lab = labelColors.at<cv::Vec3b>(i,0 );
-                      triple_t val_lab(vec_lab[0], vec_lab[1], vec_lab[2]);
-                      if (val_scr == val_lab)
+                      if (isEqual(vec_scr, labelColors.at<cv::Vec3b>(i,0 )))
                           break;
-                      if (i == labelColors.rows-1 && val_scr != triple_t(0,0,128)) {
+                      if (i == labelColors.rows-1 && !isEqual(vec_scr, backgroundColor)) {
                           newColor = true;
-//                          std::cout << "labelColors.rows: " << labelColors.rows << std::endl;
-//                          std::cout << "Comparing: " << vec_scr << " and " << vec_lab << std::endl;
                       }
                   }
                   if (newColor)
@@ -397,12 +398,8 @@ void SegmentationImpl::setLabels(std::string filename)
 
 
     for (int i=0;i<labelColors.rows;++i) {
-        allLabels_.at<cv::Vec3f>(0, i) = cv::Vec3f(labelColors.at<cv::Vec3b>(i, 0)); //
+        allLabels_.at<cv::Vec3f>(0, i) = cv::Vec3f(labelColors.at<cv::Vec3b>(i, 0));
     }
-
-    std::cout << "labelColors: " << labelColors << std::endl;
-    std::cout << "allLabels: " << allLabels_ << std::endl;
-    return;
 }
 
 void SegmentationImpl::saveScribbles() const
